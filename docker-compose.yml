@@ -60,5 +60,11 @@ services:
     command: consul://consul:8500
     network_mode: "service:consul"
 
+  fun-factor:
+    image: jirint/fun-factor
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
 volumes:
   pgdata:
