@@ -1,10 +1,9 @@
-import os
 
 from django.http import JsonResponse
 from django.shortcuts import render
 import requests
+from .consul import trip_planner_base_url
 
-TRIP_PLANNER_API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8089")
 
 
 def index(request):
@@ -13,7 +12,8 @@ def index(request):
 
 def graph_data(request):
     try:
-        resp = requests.get(f"{TRIP_PLANNER_API_BASE_URL}/map")
+        base = trip_planner_base_url()
+        resp = requests.get(f"{base}/map")
         resp.raise_for_status()
         data = resp.json()
     except Exception:
@@ -37,12 +37,13 @@ def graph_data(request):
 
 
 def path(request):
+    base = trip_planner_base_url()
     start = request.GET.get("start")
     end = request.GET.get("end")
     if not start or not end:
         return JsonResponse({"error": "start and end required"}, status=400)
     try:
-        resp = requests.get(f"{TRIP_PLANNER_API_BASE_URL}/plan", params={"from": start, "to": end})
+        resp = requests.get(f"{base}/plan", params={"from": start, "to": end})
         resp.raise_for_status()
         data = resp.json()
     except Exception as e:

@@ -1,0 +1,64 @@
+version: "3.9"
+
+services:
+  trip-ui:
+    image: vojtavoj/trip-ui
+    environment:
+      CONSUL_HTTP_ADDR: http://consul:8500
+    depends_on:
+      - consul
+    ports: ["7000:7000"]
+
+  trip-planner:
+    image: vojtavoj/trip-planner
+    environment:
+      PORT: 8089
+      DB_PASSWORD: ${DB_PASSWORD:?err}
+      DATABASE_URL: jdbc:postgresql://db:5432/trips
+    depends_on:
+      db:
+        condition: service_healthy
+    ports: ["8089:8089"]
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: trips
+      POSTGRES_USER: trips
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?err}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trips -d trips"]
+      interval: 5s
+      retries: 10
+
+  seed:
+    image: postgres:16
+    profiles: ["seed"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${DB_PASSWORD:?err}
+    volumes:
+      - ./scripts/populate-db.sh:/populate-db.sh:ro
+      - ./data:/csv:ro
+    entrypoint: ["/bin/bash", "/populate-db.sh"]
+    restart: "no"
+
+  consul:
+    image: hashicorp/consul:1.18
+    command: agent -dev -client=0.0.0.0
+    ports: ["8500:8500"]
+
+  registrator:
+    image: gliderlabs/registrator:latest
+    depends_on: [consul]
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: consul://consul:8500
+    network_mode: "service:consul"
+
+volumes:
+  pgdata:
