@@ -5,7 +5,7 @@ import requests
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from trip_ui.consul import city_info_base_url, trip_planner_base_url
+from trip_ui.consul import circuit_breaker_base_url
 from trip_ui.view_helpers.city_info import fetch
 
 
@@ -16,7 +16,7 @@ def index(request):
 def graph_data(request):
     data = {}
     try:
-        base = trip_planner_base_url()
+        base = circuit_breaker_base_url()
         resp = requests.get(f"{base}/map")
         resp.raise_for_status()
         data = resp.json()
@@ -26,7 +26,7 @@ def graph_data(request):
 
 
 def trip_path(request):
-    base = trip_planner_base_url()
+    base = circuit_breaker_base_url()
     start = request.GET.get("start")
     end = request.GET.get("end")
     if not start or not end:
@@ -45,7 +45,7 @@ def trip_path(request):
 
 
 async def city_info(request):
-    base = city_info_base_url().rstrip("/")
+    base = circuit_breaker_base_url()
     city = request.GET.get("city")
 
     if not city:
