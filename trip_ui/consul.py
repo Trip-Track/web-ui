@@ -1,22 +1,12 @@
 import os
-from functools import lru_cache
 
 import requests
 
 
-@lru_cache(maxsize=1)
-def trip_planner_base_url():
+def circuit_breaker_base_url():
     return (
-            discover_service("trip-planner")
-            or os.getenv("API_BASE_URL", "http://localhost:2222")
-    )
-
-
-@lru_cache(maxsize=1)
-def city_info_base_url():
-    return (
-            discover_service("city-info")
-            or os.getenv("API_BASE_URL", "http://localhost:2222")
+            discover_service("circuit-breaker")
+            or os.getenv("CB_BASE_URL", "http://localhost:7777")
     )
 
 
