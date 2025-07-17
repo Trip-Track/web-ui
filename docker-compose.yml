@@ -61,10 +61,19 @@ services:
     network_mode: "service:consul"
 
   fun-factor:
-    image: jirint/fun-factor
-    ports:
-      - "5000:5000"
+    image: vojtavoj/fun-factor
+    ports: ["5000:5000"]
     restart: unless-stopped
+    depends_on:
+      - consul
+
+  circuit-breaker:
+    image: vojtavoj/circuit-breaker
+    environment:
+      CONSUL_HTTP_ADDR: http://consul:8500
+    ports: ["7777:7777"]
+    depends_on:
+      - consul
 
 volumes:
   pgdata:
