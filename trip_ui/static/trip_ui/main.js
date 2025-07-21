@@ -26,13 +26,14 @@ document.getElementById('find-path')
     }
 
     const pathResp = await getPath(sel[0], sel[1]);
+    const stopNames = pathResp.stops.map(s => s.name);
     const stopCodes = pathResp.stops.map(s => s.code);
-    showPathResult(pathResp.cost, stopCodes);
+    showPathResult(pathResp.cost, stopNames);
     highlightPath(edgeMap, stopCodes);
 
     try {
-        const destCode = stopCodes.at(-1);
-        const info = await getCityInfo(destCode);
+        const destName = stopNames.at(-1);
+        const info = await getCityInfo(destName);
         showCityInfo(info);
     } catch (err) {
         console.error(err);

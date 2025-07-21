@@ -14,6 +14,7 @@ def discover_service(name, consul_addr=None):
     """Return the base URL for a service registered in Consul."""
     consul_addr = consul_addr or os.getenv("CONSUL_HTTP_ADDR", "http://localhost:8500")
     try:
+        return None
         resp = requests.get(f"{consul_addr}/v1/catalog/service/{name}")
         resp.raise_for_status()
         services = resp.json()
