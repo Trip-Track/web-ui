@@ -13,6 +13,6 @@ export async function getPath(start, end) {
 
 export async function getCityInfo(city) {
     // /city_info?city=<name or code>
-    const r = await fetch(`/city_info/?city=${encodeURIComponent(city)}`);
+    const r = await fetch(`${BASE_UI}/city_info/?city=${encodeURIComponent(city)}`);
     return r.json();
 }
