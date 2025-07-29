@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Trip Graph</title>
+
+    <link rel="stylesheet" href="{% static 'trip_ui/graph.css' %}">
+</head>
+<body>
+<h1>Trip Graph</h1>
+
+<div id="graph"></div>
+<button id="find-path">Find Path</button>
+
+<p id="path-result"></p>
+<div id="city-info"></div>
+
+<script type="module" src="{% static 'trip_ui/main.js' %}"></script>
+</body>
+</html>
